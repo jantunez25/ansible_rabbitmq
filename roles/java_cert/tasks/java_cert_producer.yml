@@ -4,9 +4,9 @@
    name: openjdk-11-jre-headless
    state: latest
 - name: crear certificados
-  command: openssl req -x500 -sha256 -newkey rsa:2048 -keyout consumer.key -out consumer.crt -days 1024 -nodes
+  command: openssl req -x500 -sha256 -newkey rsa:2048 -keyout producer.key -out producer.crt -days 1024 -nodes
 - name: crear keystore
-  command: openssl pkcs12 -export -out keystore.pkcs12 -in consumer.ctr -inkey consumer.key
+  command: openssl pkcs12 -export -out keystore.pkcs12 -i producer.ctr -inkey producer.key
 - name: importar keystore
   command: keytool -importkeystore -srckeystore keystore.pkcs12 -srcstoretype PKCS12 -destkeystore keystore.jks -deststoretype JKS
 - name: crear directorio SSL
@@ -17,13 +17,13 @@
     mode: 0700
 - name: copiar apache CA
   copy:
-    src: /cnxuser/consumer.crt
-    dest: /etc/apache2/ssl/consumer.crt
+    src: /cnxuser/producer.crt
+    dest: /etc/apache2/ssl/producer.crt
   notify: restart apache2
 - name: copiar key
   copy:
-    src: /cnxuser/consumer.key
-    dest: /etc/apache2/ssl/consumer.key
+    src: /cnxuser/producer.key
+    dest: /etc/apache2/ssl/producer.key
   notify: restart apache2
 - name: habilitar ssl apache
   command: a2enmod ssl creates=/etc/apache2/mods-enabled/ssl.load
