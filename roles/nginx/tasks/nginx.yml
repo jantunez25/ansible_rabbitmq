@@ -1,0 +1,34 @@
+---
+- name: instalar nginx
+  apt:
+    name: nginx
+    state: latest
+
+- name: creando directorio pag web
+  file:
+    path: /etc/www/consumer
+    state: directory
+    recurse: yes
+
+- name: eliminar sitio por default
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+   notify: restart nginx
+
+- name: copiar pagina web
+  copy:
+    src: /files/index.html
+    dest: /etc/www/consumer/index.html
+
+- name: copiar archivo .conf
+  template:
+    src: /template/consumer.conf
+    dest: /etc/nginx/sites-enabled/consumer.conf
+
+- name: iniciando servicio nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true
+...

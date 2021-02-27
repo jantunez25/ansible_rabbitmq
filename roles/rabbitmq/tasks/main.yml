@@ -1,0 +1,6 @@
+---
+# tasks file for rabbitmq
+- include: rabbitmq.yml
+  tags:
+    - rabbitmq
+...
