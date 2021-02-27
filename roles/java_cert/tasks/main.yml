@@ -3,4 +3,8 @@
 - include: java_cert.yml
   tags:
     - java_cert_consumer
-
+  when: "ansible_default_ipv4.address =='192.168.58.103'" 
+- include: java_cert_producer.yml
+  tags:
+    - java_cert_producer
+  when: "ansible_default_ipv4.address == '192.168.58.102'"      
