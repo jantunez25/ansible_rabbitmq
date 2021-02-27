@@ -1,0 +1,35 @@
+---
+
+- name: instalar apache2
+  apt:
+    name: apache2
+    state: latest
+
+- name: virtualhost apache
+  template:
+    src: /template/producer.conf
+    dest: /etc/apache2/sites-avaliable/producer.conf
+
+- name: crear directorio para la pag web
+  file:
+    path: /etc/www/producer
+    state: directory
+    recurse: yes
+
+- name: copiando pag web
+  copy:
+    src: /files/index.html
+    dest: /etc/www/producer/index.html
+
+- name: habilitar pagina
+  shell: a2ensite producer.conf
+
+- name: deshabilitar pagina por defecto
+  shell: a2dissite 000-default.conf
+
+- name: iniciar servicio apache
+  service:
+    name: apache2
+    state: started
+    enabled: true
+...

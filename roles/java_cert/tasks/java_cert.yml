@@ -1,0 +1,30 @@
+---
+- name: instalar jdk
+  apt:
+   name: openjdk-11-jre-headless
+   state: latest
+- name: crear certificados
+  command: openssl req -x500 -sha256 -newkey rsa:2048 -keyout consumer.key -out consumer.crt -days 1024 -nodes
+- name: crear keystore
+  command: openssl pkcs12 -export -out keystore.pkcs12 -in consumr.ctr -inkey consumer.key
+- name: importar keystore
+  command: keytool -importkeystore -srckeystore keystore.pkcs12 -srcstoretype PKCS12 -destkeystore keystore.jks -deststoretype JKS
+- name: crear directorio SSL
+  file:
+    name: /etc/apache2/ssl
+    state: diectory
+    owner: root
+    mode: 0700
+- name: copiar apache CA
+  copy:
+    src: /cnxuser/consumer.crt
+    dest: /etc/apache2/sslsonsumer.crt
+  notify: restart apache2
+- name: copiar key
+  copy:
+    src: /cnxuser/consumer.key
+    dest: /etc/apache2/ssl/consumer.crt
+  notify: restart apache2
+- name: habilitar ssl apache
+  command: a2enmod ssl creates=/etc/apache2/mods-enabled/ssl.load
+  notify: restart apache2

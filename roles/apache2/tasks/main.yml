@@ -1,0 +1,6 @@
+---
+# tasks file for apache2
+- include: apache2.yml
+  tags:
+    - apache
+...

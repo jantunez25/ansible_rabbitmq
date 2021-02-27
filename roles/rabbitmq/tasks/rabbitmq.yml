@@ -1,0 +1,53 @@
+---
+- name: instalar paquetes necesarios
+  apt:
+    name: apt-transport-https
+    state: present
+    update_cache: yes
+- name: descargar erlang 
+  get_url:
+    url: https://packages.erlang-solutions.com/erlng/esl-erlang/FLAVOUR_1_general/esl-erlang_21.0-1~debian~stretch_amd64.deb
+    dest: /home/cnxuser/esl-erlang_21.0-1~debian~stretch_amd64.deb
+    mode: 0755
+- name: instalar esl-erlang
+  apt:
+    deb: /home/cnxuser/esl-erlang_21.0-1~debian~stretch_amd64.deb
+- name: descargar erlang solutions
+  get_url:
+    url: https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+    dest: /home/cnxuser/erlang-solutions_1.0_all.deb
+    mode: 0755
+- name: instalar erlang solutions
+  apt:
+    deb: /home/cnxuser/erlang-solutions_1.0_all.deb
+- name: añadir signing key
+  apt_key:
+    url: https://packages.erlang-solutions.com/debian/erlang_solutions.asc
+    state: present
+- name: instalar dependencias
+  shell: apt-get -f install
+- name: añadir repositorio de rabbit
+  shell: echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list
+- name: añadir key
+  shell: wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -
+- name: instalar rabbitmq
+  apt:
+    name: rabbitmq-server
+    state: present
+    update_cache: yes
+- name: habilitar plugins en rabbitmq
+  rabbitmq_plugin:
+    names: rabbitmq_management
+    state: enabled
+  notify:
+    - restart rabbitmq  
+- name: añadir rabbitmq usuario admin
+  rabbitmq_user:
+    user: admin
+    password: user123
+    vhost: /
+    tags: administrator
+    configure_priv: .*
+    read_priv: .*
+    state: present
+...
