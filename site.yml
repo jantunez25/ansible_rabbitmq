@@ -1,0 +1,13 @@
+---
+- hosts: producer
+  roles: 
+    - apache2
+- host: consumer
+  roles:
+    - nginx
+- hosts: rabbitmq
+  roles:
+    - rabbitmq
+- hosts: producer:consumer
+  roles:
+    - java_cert  
